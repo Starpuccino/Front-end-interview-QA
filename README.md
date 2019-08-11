@@ -1,3 +1,5 @@
 # Front-end-interview QA
- Collected from internet
- 文档持续更新中...
+# 前端面试题大杂烩
+## Collected from internet
+### 记得动动小手Star⭐️一下哦～
+#### 文档持续更新中...
