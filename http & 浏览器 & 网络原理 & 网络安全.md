@@ -1,29 +1,6 @@
 # http & 浏览器 & 网络安全 & 网络原理
 
-- [http & 浏览器 & 网络安全 & 网络原理](#http--%e6%b5%8f%e8%a7%88%e5%99%a8--%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8--%e7%bd%91%e7%bb%9c%e5%8e%9f%e7%90%86)
-  - [http与https](#http%e4%b8%8ehttps)
-    - [说一下http和https](#%e8%af%b4%e4%b8%80%e4%b8%8bhttp%e5%92%8chttps)
-    - [http与https的区别](#http%e4%b8%8ehttps%e7%9a%84%e5%8c%ba%e5%88%ab)
-    - [http1.0 1.1 2.0的区别](#http10-11-20%e7%9a%84%e5%8c%ba%e5%88%ab)
-    - [http请求和响应](#http%e8%af%b7%e6%b1%82%e5%92%8c%e5%93%8d%e5%ba%94)
-    - [http有哪些请求方法？它们的作用或者说应用场景？](#http%e6%9c%89%e5%93%aa%e4%ba%9b%e8%af%b7%e6%b1%82%e6%96%b9%e6%b3%95%e5%ae%83%e4%bb%ac%e7%9a%84%e4%bd%9c%e7%94%a8%e6%88%96%e8%80%85%e8%af%b4%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af)
-    - [http常用请求头](#http%e5%b8%b8%e7%94%a8%e8%af%b7%e6%b1%82%e5%a4%b4)
-    - [http状态码](#http%e7%8a%b6%e6%80%81%e7%a0%81)
-    - [GET和POST的对比，或者说区别？](#get%e5%92%8cpost%e7%9a%84%e5%af%b9%e6%af%94%e6%88%96%e8%80%85%e8%af%b4%e5%8c%ba%e5%88%ab)
-  - [浏览器相关](#%e6%b5%8f%e8%a7%88%e5%99%a8%e7%9b%b8%e5%85%b3)
-    - [从打入url到显示页面，浏览器做了什么？](#%e4%bb%8e%e6%89%93%e5%85%a5url%e5%88%b0%e6%98%be%e7%a4%ba%e9%a1%b5%e9%9d%a2%e6%b5%8f%e8%a7%88%e5%99%a8%e5%81%9a%e4%ba%86%e4%bb%80%e4%b9%88)
-    - [浏览器缓存机制](#%e6%b5%8f%e8%a7%88%e5%99%a8%e7%bc%93%e5%ad%98%e6%9c%ba%e5%88%b6)
-    - [浏览器渲染原理](#%e6%b5%8f%e8%a7%88%e5%99%a8%e6%b8%b2%e6%9f%93%e5%8e%9f%e7%90%86)
-    - [回流和重绘](#%e5%9b%9e%e6%b5%81%e5%92%8c%e9%87%8d%e7%bb%98)
-  - [Web安全问题](#web%e5%ae%89%e5%85%a8%e9%97%ae%e9%a2%98)
-    - [XSS 跨站脚本攻击](#xss-%e8%b7%a8%e7%ab%99%e8%84%9a%e6%9c%ac%e6%94%bb%e5%87%bb)
-    - [CSRF 跨站点请求伪造](#csrf-%e8%b7%a8%e7%ab%99%e7%82%b9%e8%af%b7%e6%b1%82%e4%bc%aa%e9%80%a0)
-    - [Click jacking](#click-jacking)
-  - [计算机网络](#%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%bd%91%e7%bb%9c)
-    - [计算机网络各层涉及的协议](#%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%bd%91%e7%bb%9c%e5%90%84%e5%b1%82%e6%b6%89%e5%8f%8a%e7%9a%84%e5%8d%8f%e8%ae%ae)
-    - [TCP连接三次握手](#tcp%e8%bf%9e%e6%8e%a5%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b)
-    - [TCP四次握手释放连接](#tcp%e5%9b%9b%e6%ac%a1%e6%8f%a1%e6%89%8b%e9%87%8a%e6%94%be%e8%bf%9e%e6%8e%a5)
-    - [TCP和UDP的区别](#tcp%e5%92%8cudp%e7%9a%84%e5%8c%ba%e5%88%ab)
+[TOC]
 
 ## http与https
 
@@ -98,8 +75,6 @@
 
 服务器在收到浏览器的http请求之后，会将收到http报文封装成http的Request对象，并通过服务器的处理，处理完的结果以http的Response对象返回，主要包括状态码、响应头、响应报文三部分。
 
-
-
 **响应头**
 由Cache-Contol、Connection、Date、Pragma等组成。
 
@@ -115,14 +90,14 @@
 
 ### http有哪些请求方法？它们的作用或者说应用场景？
 
-* GET: 请求指定的页面信息，并返回实体主体。
-* HEAD: 和GET类似，只不过不返回报文主体，只返回响应首部。可用于确认URI的有效性及资源更新的日期时间。  
-* POST: 向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。  
-* PUT: 用来传输文件，要求请求报文的主体中包含文件内容，然后保存到请求URI指定的位置。  
-* DELETE: 和PUT相反，按请求URI删除指定的资源。  
-* OPTIONS: 用来查询针对请求URI指定的资源支持的方法。如果请求成功，会有一个Allow的头包含类似“GET,POST”这样的信息。  
-* TRACE: 让服务端将之前的请求通信返回给客户端的方法（因此客户端可以得知请求是怎么一步步到服务端的）。主要用于测试或诊断。  
-* CONNECT: 使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。  
+* `GET`请求指定的页面信息，并返回实体主体。
+* `HEAD`和GET类似，只不过不返回报文主体，只返回响应首部。可用于确认URI的有效性及资源更新的日期时间。
+* `POST`向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。
+* `PUT`用来传输文件，要求请求报文的主体中包含文件内容，然后保存到请求URI指定的位置。  
+* `DELETE`和PUT相反，按请求URI删除指定的资源。
+* `OPTIONS`用来查询针对请求URI指定的资源支持的方法。如果请求成功，会有一个Allow的头包含类似“GET,POST”这样的信息。
+* `TRACE`让服务端将之前的请求通信返回给客户端的方法（因此客户端可以得知请求是怎么一步步到服务端的）。主要用于测试或诊断。
+* `CONNECT`使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。
 
 ### http常用请求头
 
@@ -165,8 +140,8 @@
 * `200` OK 请求成功。一般用于GET与POST请求
 * `201` Created 已创建。成功请求并创建了新的资源
 * `202` Accepted 已接受。已经接受请求，但未处理完成
-* `203 `   Non-Authoritative Information 非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本
-* `204 `   No Content 无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档
+* `203` Non-Authoritative Information 非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本
+* `204` No Content 无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档
 * `205` Reset Content 重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域
 * `206` Partial Content 部分内容。服务器成功处理了部分GET请求
 * `300` Multiple Choices 多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择
@@ -209,26 +184,26 @@
 ### 从打入url到显示页面，浏览器做了什么？
 
 1. 浏览器的地址栏输入URL并按下回车。
-2. 浏览器查找当前URL是否存在[缓存](#%e6%b5%8f%e8%a7%88%e5%99%a8%e7%bc%93%e5%ad%98%e6%9c%ba%e5%88%b6)，并比较缓存是否过期。
+2. 浏览器查找当前URL是否存在[缓存](#浏览器缓存机制)，并比较缓存是否过期。
 3. DNS解析URL到对应的ip。
-4. 根据ip[建立TCP连接（三次握手）](#tcp%e8%bf%9e%e6%8e%a5%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b)。
-5. 发起[http请求](#http%e8%af%b7%e6%b1%82%e5%92%8c%e5%93%8d%e5%ba%94)。
-6. 服务端处理请求，发回[响应信息](#http%e8%af%b7%e6%b1%82%e5%92%8c%e5%93%8d%e5%ba%94)，浏览器接受http响应。
-7. 浏览器[渲染页面](#%e6%b5%8f%e8%a7%88%e5%99%a8%e6%b8%b2%e6%9f%93%e5%8e%9f%e7%90%86)。
-8. [关闭TCP连接（四次握手）](#tcp%e5%9b%9b%e6%ac%a1%e6%8f%a1%e6%89%8b%e9%87%8a%e6%94%be%e8%bf%9e%e6%8e%a5)。
+4. 根据ip[建立TCP连接（三次握手）](#tcp连接三次握手)。
+5. 发起[http请求](#http请求和响应)。
+6. 服务端处理请求，发回[响应信息](#http请求和响应)，浏览器接受http响应。
+7. 浏览器[渲染页面](#浏览器渲染原理)。
+8. [关闭TCP连接（四次握手）](#tcp四次握手释放连接)。
 
 ### 浏览器缓存机制
 
 根据是否需要重新向服务器请求来分类。  
 
-* 强缓存： 判断http首部字段: `cache-control` `Expires`。
+* **强缓存：** 判断http首部字段: `cache-control` `Expires`。
   1. cache-control中max-age保存一个相对时间。该时间标示，缓存在这个时间内均有效。
   2. Expires 是一个绝对时间，即服务器时间。浏览器检查当前时间，如果没到失效时间就直接用缓存文件。（问题：服务器时间与浏览器时间不同）
-* 弱缓存： `last-modified` `Etag`
+* **弱缓存：** `last-modified` `Etag`
   1. last-modified 是第一次请求资源时，服务器返回字段，表示最后一次更新的时间。下一次请求发送if-modified-since字段，服务器回比较两者，如果不一致认为缓存已过期并返回新资源。相同，则返回304状态码，让浏览器继续缓存。
   2. Etag 是资源的哈希字符串，如果资源内容更新，Etag回变化。不变则返回304状态码。
 
-<img src="https://i.ibb.co/1LDsD8J/image.png" alt="image" border="0">
+<img src="./img/image.png" alt="image" border="0">
 
 ### 浏览器渲染原理
 
@@ -247,14 +222,14 @@
 3. CSS样式文件加载后，开始解析和构建CSS Rule Tree
 4. javascript脚本文件加载后，通过DOM API和CSSOM API来操作DOM Tree 和 CSS Rule Tree。
 
-**浏览器渲染** （[回流和重绘](#%e5%9b%9e%e6%b5%81%e5%92%8c%e9%87%8d%e7%bb%98)）
+**浏览器渲染** （[回流和重绘](#回流和重绘)）
 
 1. 浏览器引擎通过DOM Tree 和 CSS Rule Tree 构建 Rendering Tree。
 2. Rendering Tree 并不与 DOM Tree 对应，比如像 标签内容或带有 display: none; 的元素节点并不包括在 Rendering Tree 中。
 3. 通过CSS Rule Tree 匹配 DOM Tree 进行定位坐标和大小，是否换行，以及position、overflow、z-index等等属性，这个过程称为Flow或Layout。
 4. 最终通过调用Native GUI 的 API 绘制网页画面的过程称为 Paint 。
 
-<img src="https://i.ibb.co/27V9bhM/image.png" alt="image" border="0">
+<img src="img/https-::i.ibb.co:27V9bhM:image.png" alt="image" border="0">
 
 **具体如何做的？**
 
@@ -263,14 +238,14 @@
 3. 词法分析： 发出的令牌转换成定义其属性和规则的对象。
 4. DOM构建： 最后，由于 HTML 标记定义不同标记之间的关系（一些标记包含在其他标记内），创建的对象链接在一个树数据结构内，此结构也会捕获原始标记中定义的父项-子项关系：HTML 对象是 body 对象的父项，body 是 paragraph 对象的父项，依此类推。
 
-<img src="https://i.ibb.co/ZGR8cJZ/111.png" alt="111" border="0">
+<img src="img/111.png" alt="111" border="0">
 
 1. DOM 树与 CSSOM 树合并后形成渲染树。
 1. 渲染树只包含渲染网页所需的节点。
 1. 布局计算每个对象的精确位置和大小。
 1. 最后一步是绘制，使用最终渲染树将像素渲染到屏幕上。
 
-<img src="https://i.ibb.co/2Nd11jq/tree.png" alt="tree" border="0">
+<img src="img/tree.png" alt="tree" border="0">
 
 ### 回流和重绘
 
@@ -281,7 +256,8 @@
 
 ### XSS 跨站脚本攻击
 
-跨站脚本攻击（Cross Site Scripting）是最常见和基本的攻击 WEB 网站方法，攻击者通过注入恶意指令代码到网页，使用户加载并执行攻击者恶意制造的网页程序。这些恶意网页程序通常是JavaScript，但实际上也可以包括Java、 VBScript、ActiveX、 Flash 或者甚至是普通的HTML。攻击成功后，攻击者可能得到包括但不限于更高的权限（如执行一些操作）、私密网页内容、会话和cookie等各种内容。
+- 攻击者通过注入恶意指令代码到网页，使用户加载并执行攻击者恶意制造的网页程序。这些恶意网页程序通常是JavaScript，但实际上也可以包括Java、VBScript、ActiveX、Flash 或者甚至是普通的HTML。
+- 攻击成功后，攻击者可能得到包括但不限于更高的权限（如执行一些操作）、私密网页内容、会话和cookie等各种内容。
 
 **分类**：
 
@@ -292,17 +268,18 @@
 **防御**：
 
 * 服务端设置httpOnly：在cookie中设置HttpOnly属性后，js脚本将无法读取到cookie信息；设置secure - 告诉浏览器仅在请求为https的时候发送cookie。
-* 过滤：在表单提交的时候，对所有的参数进行过滤。（antd的提交由问题）
-* HtmlEncode转换html标签
-* JavaScriptEncode对字符加上反斜杠
+* 过滤：在表单提交的时候，对所有的参数进行过滤。（antd的提交有问题）
+* HtmlEncode转换html标签。
+* JavaScriptEncode对字符加上反斜杠。
 
 ### CSRF 跨站点请求伪造
 
-跨站点请求伪造（Cross-Site Request Forgeries），也被称为 one-click attack 或者 session riding。冒充用户发起请求（在用户不知情的情况下）， 完成一些违背用户意愿的事情（如修改用户信息，删初评论等）。
+- 跨站点请求伪造（Cross-Site Request Forgeries），也被称为one-click attack 或者 session riding。
+- 冒充用户发起请求（在用户不知情的情况下）， 完成一些违背用户意愿的事情（如修改用户信息，删初评论等）。
 
-<a href="https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html" target="_blank">详解CSRF</a>
+详解CSRF [https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html](https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html)
 
-<img src="https://pic002.cnblogs.com/img/hyddd/200904/2009040916453171.jpg">
+<img src="img/2009040916453171.jpg">
 **防御**
 
 1. 验证码；强制用户必须与应用进行交互，才能完成最终请求。此种方式能很好的遏制 csrf，但是用户体验比较差。
@@ -360,7 +337,7 @@
 * 第二次握手：服务器接收到syn包，必须确认客户的SYN(ack = i + 1)，同时自己也发送一个SYN包（syn = k）,即SYN+ACK包，此时服务器进入SYN_RECY状态。
 * 第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包(ack = k + 1)，此包发送完毕，客户端和和服务端都进入ESTABLISHED（TCP连接成功）状态，完成三次握手。
 
-<img src="https://i.ibb.co/jwTW319/tcp.png" alt="tcp" border="0">
+<img src="img/tcp.png" alt="tcp" border="0">
 
 ### TCP四次握手释放连接
 
@@ -369,7 +346,7 @@
 * 第三次握手：服务端发送FIN给客户端，告知客户端，我也准备好结束了。
 * 第四次握手：客户端回复ack给服务端，告诉服务端，好的，结束吧。
 
-<img src="https://i.ibb.co/pL3N1Xr/image.png" alt="image" border="0">
+<img src="img/image-20190814012813650.png" alt="image" border="0">
 
 ### TCP和UDP的区别
 
