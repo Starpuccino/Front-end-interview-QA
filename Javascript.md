@@ -292,9 +292,10 @@ console.log(cat instanceof Cat); //true
 </body>
 ```
 
-### 事件循环 event-loop
+### 事件循环机制 event-loop
 
 **同步：** 如果函数在返回时，调用者可以得到预期的结果。
+
 **异步：** 如果函数在返回时，调用者还拿不到预期的结果，需要将来通过一定手段得到。
 
 调控异步任务的方法：消息队列。队列是一种先入先出型数据结构。
@@ -361,7 +362,15 @@ console.log(cat instanceof Cat); //true
 - cookie数据不能超过4K，长度太大就会被截掉，同域名一般不超过20个,同时因为每次http请求都会携带cookie，所以cookie只适合保存很小的数据，如回话标识。
 - localStorage生命周期是永久，除非用户显示在浏览器提供的UI上清除localStorage信息，否则这些信息将永远存在。存放数据大小为一般为5MB,而且它仅在客户端（即浏览器）中保存，不参与和服务器的通信。
 - sessionStorage仅在当前会话下有效，关闭页面或浏览器后被清除。存放数据大小为一般为5MB,而且它仅在客户端（即浏览器）中保存，不参与和服务器的通信。源生接口可以接受，亦可再次封装来对Object和Array有更好的支持。
-- 作用域不同：不在不同的浏览器窗口中共享，即使是同一个页面；localStorage：在所有同源窗口都是共享的；cookie：也是在所有同源窗口中共享的
+- 作用域不同：不在不同的浏览器窗口中共享，即使是同一个页面；localStorage：在所有同源窗口都是共享的；cookie：也是在所有同源窗口中共享的。
+
+### clientHeight,scrollHeight,offsetHeight ,以及scrollTop, offsetTop,clientTop的区别
+
+- clientHeight：表示的是可视区域的高度，不包含border和滚动条。
+- offsetHeight：表示可视区域的高度，包含了border和滚动条。
+- scrollHeight：表示了所有区域的高度，包含了因为滚动被隐藏的部分。 
+- clientTop：表示边框border的厚度，在未指定的情况下一般为0 。
+- scrollTop：滚动后被隐藏的高度，获取对象相对于由offsetParent属性指定的父坐标(css定位的元素或body元素)距离顶端的高度。
 
 ## **同源和跨域**
 
@@ -457,8 +466,8 @@ Access-Control-Allow-Origin: http://api.bob.com
    Access-Control-Allow-Credentials: true
    Access-Control-Expose-Headers: FooBar
    Content-Type: text/html; charset=utf-8
-   ```
-   
+  ```
+  
    1. `Access-Control-Allow-Origin` 字段必须。它的值要么是请求时`Origin`字段的值，要么是`*`，表示接受任意域名的请求。
    2. `Access-Control-Allow-Credentials` 字段可选，是一个布尔值，表示是否允许发送Cookie。默认情况下，Cookie不包括在CORS请求之中。设为true，即表示服务器许可，Cookie可以包含在请求中。这个值也只能设为true，如果服务器不要浏览器发送Cookie，删除该字段即可。
    3. `Access-Control-Expose-Headers` 字段可选。CORS请求时，XMLHttpRequest对象的getResponseHeader()方法只能拿到6个基本字段：`Cache-Control`、`Content-Language`、`Content-Type`、`Expires`、`Last-Modified`、`Pragma`。如果想拿到其他字段，就必须在`Access-Control-Expose-Headers`里面指定。上面的例子指定，`getResponseHeader('FooBar')`可以返回`FooBar`字段的值。
@@ -808,6 +817,18 @@ function ajax(options){
 }
 ```
 
+### instanceof源码
+
+```javascript
+// A instanceof B  判断A是不是B的实例
+var L = A.__proto__;
+var R = B.prototype;
+if(L === R) 
+  return true;
+else 
+  return false;
+```
+
 ### 实现深拷贝
 
 ```javascript
@@ -900,6 +921,44 @@ function Promise(fn) {
         }, 0)
     }
     fn(resolve, reject)
+}
+```
+
+### Promise实现循环
+
+```javascript
+let delayPrint = (i) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log(i);
+            resolve('ok:'+i)
+        }, 1000)
+    })
+}
+
+let forbody = Promise.resolve('begin');
+for (let i = 1; i <= 5; i++) {
+    forbody = forbody.then(res=>{
+        return delayPrint(i);
+    })
+}
+```
+
+### Promise.all实现
+
+```javascript
+static all(proArr) {
+  return new Promise((resolve, reject) => {
+    let ret = []
+    let count = 0
+    let done = (i, data) => {
+      ret[i] = data
+      if(++count === proArr.length) resolve(ret)
+    }
+    for (let i = 0; i < proArr.length; i++) {
+      proArr[i].then(data => done(i,data) , reject)
+    }
+  })
 }
 ```
 
@@ -1075,18 +1134,6 @@ function merge(left, right) {
 }
 ```
 
-### instanceof源码
-
-```javascript
-// A instanceof B  判断A是不是B的实例
-var L = A.__proto__;
-var R = B.prototype;
-if(L === R) 
-  return true;
-else 
-  return false;
-```
-
 ### 判断是否为Array
 
 ```javascript
@@ -1099,6 +1146,40 @@ function isArrayFn (obj) {
 }
 
 Array.isArray();						// ECMAScript5
+```
+
+### 实现一个add方法，使计算结果能够满足如下预期：
+
+函数柯里化(Currying)
+
+> add(1)(2)(3) = 6;
+> add(1, 2, 3)(4) = 10;
+> add(1)(2)(3)(4)(5) = 15;
+
+```javascript
+function add() {
+    // 第一次执行时，定义一个数组专门用来存储所有的参数
+    var _args = Array.prototype.slice.call(arguments);
+
+    // 在内部声明一个函数，利用闭包的特性保存_args并收集所有的参数值
+    var _adder = function() {
+        _args.push(...arguments);
+        return _adder;
+    };
+
+    // 利用toString隐式转换的特性，当最后执行时隐式转换，并计算最终的值返回
+    _adder.toString = function () {
+        return _args.reduce(function (a, b) {
+            return a + b;
+        });
+    }
+    return _adder;
+}
+
+add(1)(2)(3)                // 6
+add(1, 2, 3)(4)             // 10
+add(1)(2)(3)(4)(5)          // 15
+add(2, 6)(1)                // 9
 ```
 
 ### Array.of源码

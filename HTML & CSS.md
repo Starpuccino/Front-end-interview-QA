@@ -4,6 +4,59 @@
 
 ## **HTML**
 
+### cookie sessionStorage localStorage区别
+
+cookie数据始终在同源的http请求中携带(即使不需要)。 
+
+cookie数据还有路径（path）的概念，可以限制。cookie只属于某个路径下 
+
+存储大小限制也不同：
+
+- cookie数据不能超过4K，同时因为每次http请求都会携带cookie，所以cookie只适合保存很小的数据，如回话标识。 
+- webStorage虽然也有存储大小的限制，但是比cookie大得多，可以达到5M或更大。
+
+数据的有效期不同
+
+- sessionStorage仅在当前的浏览器窗口关闭有效。
+- localStorage始终有效，窗口或浏览器关闭也一直保存，因此用作持久数据。
+- cookie：只在设置的cookie过期时间之前一直有效，即使窗口和浏览器关闭。
+
+作用域不同
+
+- sessionStorage不在不同的浏览器窗口中共享，即使是同一个页面
+- localStorage和cookie在所有同源窗口都是共享的
+
+### cookie有哪些字段可以设置
+
+`name` 字段为一个cookie的名称。 
+
+`value` 字段为一个cookie的值。 
+
+`domain` 字段为可以访问此cookie的域名。 
+
+- 非顶级域名，如二级域名或者三级域名，设置的cookie的domain只能为顶级域名或者二级域名或者三级域名本身，不能设置其他二级域名的cookie，否则cookie无法生成。 
+- 顶级域名只能设置domain为顶级域名，不能设置为二级域名或者三级域名，否则cookie无法生成。 
+- 二级域名能读取设置了domain为顶级域名或者自身的cookie，不能读取其他二级域名domain的cookie。所以要想cookie在多个二级域名中共享，需要设置domain为顶级域名，这样就可以在所有二级域名里面或者到这个cookie的值了。
+- 顶级域名只能获取到domain设置为顶级域名的cookie，其他domain设置为二级域名的无法获取。 
+
+`path` 字段为可以访问此cookie的页面路径。 比如domain是abc.com,path是/test，那么只有/test路径下的页面可以读取此cookie。 
+
+`expires/Max-Age` 字段为此cookie超时时间。若设置其值为一个时间，那么当到达此时间后，此cookie失效。不设置的话默认值是Session，意思是cookie会和session一起失效。当浏览器关闭(不是浏览器标签页，而是整个浏览器) 后，此cookie失效。 
+
+`Size` 字段 此cookie大小。 
+
+`http` 字段  cookie的httponly属性。若此属性为true，则只有在http请求头中会带有此cookie的信息，而不能通过document.cookie来访问此cookie。 
+
+`secure`  字段 设置是否只能通过https来传递此条cookie
+
+### Doctype作用?严格模式与混杂模式如何区分？它们有何意义? 
+
+Doctype声明于文档最前面，告诉浏览器以何种方式来渲染页面。
+
+**严格模式**的排版和JS 运作模式是 以该浏览器支持的最高标准运行。 
+
+**混杂模式**向后兼容，模拟老式浏览器，防止浏览器无法兼容页面。
+
 ### HTML5有哪些新特性
 
 #### 语意化标签
@@ -65,6 +118,20 @@ if (canvas.getContext){
 #### 拖放（Drag 和 Drop）
 
 > 参考 [https://blog.csdn.net/z983002710/article/details/76335122](https://blog.csdn.net/z983002710/article/details/76335122)
+
+dragstart：事件主体是被拖放元素，在开始拖放被拖放元素时触发。
+
+darg：事件主体是被拖放元素，在正在拖放被拖放元素时触发。
+
+dragenter：事件主体是目标元素，在被拖放元素进入某元素时触发。
+
+dragover：事件主体是目标元素，在被拖放在某元素内移动时触发。
+
+dragleave：事件主体是目标元素，在被拖放元素移出目标元素是触发。
+
+drop：事件主体是目标元素，在目标元素完全接受被拖放元素时触发。
+
+dragend：事件主体是被拖放元素，在整个拖放操作结束时触发。
 
 ```html
 <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
@@ -146,15 +213,32 @@ localStorage永久存储，sessionStorage关闭窗口后消失，保存在本地
 
 #### WebSocket
 
-WebSocket是HTML5开始提供的一种在单个 TCP 连接上进行全双工通讯的协议。在WebSocket API中，浏览器和服务器只需要做一个握手的动作，然后，浏览器和服务器之间就形成了一条快速通道。两者之间就直接可以数据互相传送。浏览器通过 JavaScript 向服务器发出建立 WebSocket 连接的请求，连接建立以后，客户端和服务器端就可以通过 TCP 连接直接交换数据。当你获取 Web Socket 连接后，你可以通过 **send()** 方法来向服务器发送数据，并通过 **onmessage** 事件来接收服务器返回的数据。
+- WebSocket是HTML5开始提供的一种在单个 TCP 连接上进行全双工通讯的协议。在WebSocket API中，浏览器和服务器只需要做一个握手的动作，然后，浏览器和服务器之间就形成了一条快速通道。两者之间就直接可以数据互相传送。浏览器通过 JavaScript 向服务器发出建立 WebSocket 连接的请求，连接建立以后，客户端和服务器端就可以通过 TCP 连接直接交换数据。当你获取 Web Socket 连接后，你可以通过 **send()** 方法来向服务器发送数据，并通过 **onmessage** 事件来接收服务器返回的数据。
 
+- WebSocket是基于Http协议的，或者说借用了Http协议来完成一部分握手，在握手阶段与Http是相同的。我们来看一个websocket握手协议的实现，基本是2个属性，upgrade，connection。 
 
+- 基本请求如下：
+
+  ```http
+  GET /chat HTTP/1.1
+  Host: server.example.com
+  Upgrade: websocket
+  Connection: Upgrade
+  Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+  Sec-WebSocket-Protocol: chat, superchat
+  Sec-WebSocket-Version: 13
+  Origin: http://example.com
+  ```
 
 #### Web Workers
 
-当在 HTML 页面中执行脚本时，页面的状态是不可响应的，直到脚本已完成。
+在HTML页面中，如果在执行脚本时，页面的状态是不可相应的，直到脚本执行完成后，页面才变成可相应。web worker是运行在后台的js，独立于其他脚本，不会影响页面的性能。并且通过postMessage将结果回传到主线程。这样在进行复杂操作的时候，就不会阻塞主线程了。 （相当于实现多线程并发）
 
-web worker 是运行在后台的 JavaScript，独立于其他脚本，不会影响页面的性能。您可以继续做任何愿意做的事情：点击、选取内容等等，而此时 web worker 在后台运行。（相当于实现多线程并发）
+**如何创建web worker：** 
+
+- 检测浏览器对于web worker的支持性 
+- 创建web worker文件（js，回传函数等） 
+- 创建web worker对象
 
 #### SSE
 
@@ -172,6 +256,38 @@ source.onmessage=function(event){
   document.getElementById("result").innerHTML += event.data + "<br>";
 };
 ```
+
+### iframe是什么？有什么缺点？ 
+
+定义：iframe元素会创建包含另一个文档的内联框架
+
+提示：可以将提示文字放在<iframe></iframe>之间，来提示某些不支持iframe的浏览器 
+
+**缺点：** 
+
+- 会阻塞主页面的onload事件。
+- 搜索引擎无法解读这种页面，不利于SEO。
+- iframe和主页面共享连接池，而浏览器对相同区域有限制所以会影响性能。
+
+### Web Quality（无障碍）
+
+能够被残障人士使用的网站才能称得上一个易用的（易访问的）网站。
+
+残障人士指的是那些带有残疾或者身体不健康的用户。 
+
+> 使用alt属性： 
+
+```html
+<img src="abcde.jpg"  alt="this is a person"/> 
+```
+
+有时候浏览器会无法显示图像。具体的原因有： 
+
+- 用户关闭了图像显示 
+- 浏览器是不支持图形显示的迷你浏览器 
+- 浏览器是语音浏览器（供盲人和弱视人群使用）
+
+如果您使用了`alt` 属性，那么浏览器至少可以显示或读出有关图像的描述。
 
 ## **CSS**
 
@@ -428,6 +544,10 @@ transform的2D和3D转换
 
   从父元素继承position属性的值。
 
+### z-index的定位方法
+
+z-index属性设置元素的堆叠顺序，拥有更好堆叠顺序的元素会处于较低顺序元素之前，z-index可以为负，且z-index只能在定位元素上奏效，该属性设置一个定位元素沿z轴的位置，如果为正数，离用户越近，为负数，离用户越远，它的属性值有auto，默认，堆叠顺序与父元素相等，number，inherit，从父元素继承z-index属性的值。
+
 ### 盒子模型
 
 content + padding + border + margin
@@ -448,6 +568,11 @@ box-sizing: content-box | border-box | inherit
 ```
 
 content-box 对应W3C标准盒子模型 border-box 对应IE盒子模型
+
+### 回流和重绘
+
+**Reflow：** 回流。一般元素的内容、结构、位置或尺寸发生了变化，需要重新计算样式和渲染树。
+**Repaint：** 重绘。意味着元素发生的变化只是影响了元素的一些外观之类的时候，此时只需要用新样式绘制这个元素就ok。
 
 ### 弹性盒子布局flex
 

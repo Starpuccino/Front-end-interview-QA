@@ -1,0 +1,518 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>http &amp; 浏览器 &amp; 网络原理 &amp; 网络安全</title><link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg-color: #B5D6FC; --select-text-font-color: auto; --monospace: "Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857143; overflow-x: hidden; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; tab-size: 4; background-position: inherit inherit; background-repeat: inherit inherit; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) { 
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font-family: inherit; font-size: inherit; font-style: inherit; font-variant-caps: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.701961); color: rgb(85, 85, 85); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right-width: 0px; background-color: inherit; }
+.CodeMirror-linenumber { }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; position: relative !important; background-position: inherit inherit; background-repeat: inherit inherit; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; background-position: 0px 0px; background-repeat: initial initial; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print { 
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid-page; break-before: avoid-page; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid-page; }
+  .typora-export #write::after { height: 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background-color: rgb(204, 204, 204); display: block; overflow-x: hidden; background-position: initial initial; background-repeat: initial initial; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) { 
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background-color: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; background-position: initial initial; background-repeat: initial initial; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; }
+a.md-print-anchor { white-space: pre !important; border: none !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; text-shadow: initial !important; background-position: 0px 0px !important; background-repeat: initial initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="mermaid"] svg, [lang="flow"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom-width: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    padding-bottom: .3em;
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+   padding-bottom: .3em;
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border-top: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table tr th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr td {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr th:first-child,
+table tr td:first-child {
+    margin-top: 0;
+}
+table tr th:last-child,
+table tr td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+.html-for-mac .context-menu {
+    --item-hover-bg-color: #E6F0FE;
+}
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+}
+
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+ .typora-export li, .typora-export p, .typora-export,  .footnote-line {white-space: normal;} 
+</style>
+</head>
+<body class='typora-export' >
+<div  id='write'  class = 'is-mac'><h1><a name="http--浏览器--网络安全--网络原理" class="md-header-anchor"></a><span>http &amp; 浏览器 &amp; 网络安全 &amp; 网络原理</span></h1><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n0"><a class="md-toc-inner" href="#http--浏览器--网络安全--网络原理">http &amp; 浏览器 &amp; 网络安全 &amp; 网络原理</a></span><span class="md-toc-item md-toc-h2" data-ref="n3"><a class="md-toc-inner" href="#http">http</a></span><span class="md-toc-item md-toc-h3" data-ref="n4"><a class="md-toc-inner" href="#http和https">http和https</a></span><span class="md-toc-item md-toc-h3" data-ref="n48"><a class="md-toc-inner" href="#http与https的区别">http与https的区别</a></span><span class="md-toc-item md-toc-h3" data-ref="n60"><a class="md-toc-inner" href="#http10-11-20的区别">http1.0 1.1 2.0的区别</a></span><span class="md-toc-item md-toc-h3" data-ref="n85"><a class="md-toc-inner" href="#http请求和响应">http请求和响应</a></span><span class="md-toc-item md-toc-h3" data-ref="n91"><a class="md-toc-inner" href="#http有哪些请求方法它们的作用或者说应用场景">http有哪些请求方法？它们的作用或者说应用场景？</a></span><span class="md-toc-item md-toc-h3" data-ref="n109"><a class="md-toc-inner" href="#http常用请求头">http常用请求头</a></span><span class="md-toc-item md-toc-h3" data-ref="n175"><a class="md-toc-inner" href="#http状态码">http状态码</a></span><span class="md-toc-item md-toc-h3" data-ref="n231"><a class="md-toc-inner" href="#get和post的对比或者说区别">GET和POST的对比，或者说区别？</a></span><span class="md-toc-item md-toc-h2" data-ref="n257"><a class="md-toc-inner" href="#浏览器相关">浏览器相关</a></span><span class="md-toc-item md-toc-h3" data-ref="n258"><a class="md-toc-inner" href="#从打入url到显示页面浏览器做了什么">从打入url到显示页面，浏览器做了什么？</a></span><span class="md-toc-item md-toc-h3" data-ref="n276"><a class="md-toc-inner" href="#浏览器缓存机制">浏览器缓存机制</a></span><span class="md-toc-item md-toc-h3" data-ref="n294"><a class="md-toc-inner" href="#浏览器渲染原理">浏览器渲染原理</a></span><span class="md-toc-item md-toc-h3" data-ref="n349"><a class="md-toc-inner" href="#回流和重绘">回流和重绘</a></span><span class="md-toc-item md-toc-h3" data-ref="n482"><a class="md-toc-inner" href="#前端优化">前端优化</a></span><span class="md-toc-item md-toc-h2" data-ref="n351"><a class="md-toc-inner" href="#web安全问题">Web安全问题</a></span><span class="md-toc-item md-toc-h3" data-ref="n352"><a class="md-toc-inner" href="#xss-跨站脚本攻击">XSS 跨站脚本攻击</a></span><span class="md-toc-item md-toc-h3" data-ref="n376"><a class="md-toc-inner" href="#csrf-跨站点请求伪造">CSRF 跨站点请求伪造</a></span><span class="md-toc-item md-toc-h3" data-ref="n393"><a class="md-toc-inner" href="#click-jacking">Click jacking</a></span><span class="md-toc-item md-toc-h2" data-ref="n408"><a class="md-toc-inner" href="#计算机网络">计算机网络</a></span><span class="md-toc-item md-toc-h3" data-ref="n409"><a class="md-toc-inner" href="#计算机网络各层涉及的协议">计算机网络各层涉及的协议</a></span><span class="md-toc-item md-toc-h3" data-ref="n446"><a class="md-toc-inner" href="#tcp连接三次握手">TCP连接三次握手</a></span><span class="md-toc-item md-toc-h3" data-ref="n455"><a class="md-toc-inner" href="#tcp四次握手释放连接">TCP四次握手释放连接</a></span><span class="md-toc-item md-toc-h3" data-ref="n466"><a class="md-toc-inner" href="#tcp和udp的区别">TCP和UDP的区别</a></span></p></div><h2><a name="http" class="md-header-anchor"></a><span>http</span></h2><h3><a name="http和https" class="md-header-anchor"></a><span>http和https</span></h3><p><strong><span>http协议</span></strong><span>： 超文本传输协议。是一种详细规定了浏览器和万维网服务器之间互相通信的规则。</span></p><p><strong><span>http会出现的问题</span></strong><span>：http是明文传输协议，交互过程与数据传输都没有加密过，通信双方也没有任何的认证。</span></p><p><strong><span>https协议</span></strong><span>：是以安全为目的的http通道，http安全版。在http下加SSL层，加密的详细内容需要ssl。</span></p><p><strong><span>保证安全的措施</span></strong><span>：</span></p><ol start='' ><li><span>一是通过建立一个信息安全通道，来保证数据传输的安全。</span></li><li><span>确认网站的真实性。</span></li></ol><p><strong><span>https加密的方式</span></strong><span>：</span></p><ol start='' ><li><span>通过ssl证书来验证服务器的身份。</span></li><li><span>为客户端与服务器建立ssl安全信息通道（ssl加密通道）。</span></li></ol><p><strong><span>http与https的区别</span></strong></p><ol start='' ><li><span>http是明文传输，https是基于ssl加密的传输协议。</span></li><li><span>连接方式不同，端口号不同 http(80) https(443)</span></li><li><span>http是简单的 无状态的连接，https 协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议</span></li><li><span>https 内容经过对称加密，每个连接生成一个唯一的加密密钥（</span><strong><span>对称密钥</span></strong><span>:对称密钥加密又叫专用密钥加密，即发送和接收数据的双方必使用相同的密钥对明文进行加密和解密运算。</span></li><li><span>HTTPS 内容传输经过完整性校验</span></li></ol><p><strong><span>https实现的原理</span></strong></p><ol start='' ><li><span>客户端发送ssl连接给服务器</span></li><li><span>服务器接受后，与客户端协商证书的版本号等信息，将ca公钥返回给客户端。</span></li><li><span>客户端接受到ca后，去第三方ca机构，验证ca的合法性</span></li><li><span>如合法，则生成一串随机数，通过公钥加密，返回给服务器</span></li><li><span>服务器接收到请求后，使用自己的私钥解密，获取随机数。</span></li><li><span>于是客户端和服务器有了一串相同的随机数。实现了对称密钥。</span></li><li><span>进行数据传输，服务器和客户端双方用公有的相同的对称秘钥对数据进行加密解密，可以保证在数据收发过程中的安全。</span></li></ol><h3><a name="http与https的区别" class="md-header-anchor"></a><span>http与https的区别</span></h3><ol start='' ><li><span>http是明文传输，https是基于ssl加密的传输协议。</span></li><li><span>连接方式不同，端口号不同 http(80) https(443)</span></li><li><span>http是简单的 无状态的连接，https 协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议</span></li><li><span>https 内容经过对称加密，每个连接生成一个唯一的加密密钥（</span><strong><span>对称密钥</span></strong><span>:对称密钥加密又叫专用密钥加密，即发送和接收数据的双方必使用相同的密钥对明文进行加密和解密运算。</span></li><li><span>HTTPS内容传输经过完整性校验</span></li></ol><h3><a name="http10-11-20的区别" class="md-header-anchor"></a><span>http1.0 1.1 2.0的区别</span></h3><p><strong><span>http 1.0</span></strong><span>：</span></p><ol start='' ><li><span>短连接</span></li><li><span>只有当一个tcp连接结束后，才会进入下一个连接</span></li></ol><p><strong><span>http 1.1</span></strong><span>：</span></p><ol start='' ><li><span>长连接： </span><code>connecion: keey-alive</code><span> 或者 </span><code>close</code><span>。</span></li><li><span>host字段：用来明确表示浏览器要服务器上的哪一个WEB站点,这才实现了在一台WEB服务器上可以在同一个IP地址和端口号上使用不同的主机名来创建多个虚拟WEB站点,同时还支持了断点续传.</span></li><li><span>管道(管线化)：客户端可以同时发多个请求给服务端，服务端需按顺序返回响应给客户端。</span></li><li><span>缓存：断点续传。</span></li></ol><p><strong><span>http 2.0</span></strong><span>：</span></p><ol start='' ><li><span>二进制分帧(frame)： 在应用层和传输层之间增加了一个二进制分帧层,也就是把http1.x的header和body使用帧(frame)进行了封装。</span></li><li><span>多路复用：实现了并发发送。所有的HTTP2.0通信都在一个TCP连接上完成，这个连接可以承载任意数量的双向数据流,每个数据流都以消息的方式进行发送,这个发送可以使乱序的,然后在通过每个帧头部的流标识符进行组装,同时每个数据流都可以设置优先级.</span></li><li><span>头部压缩：就是和服务端约定头部的数据的编码,来将头部进行压缩后发送,这样就可以增加请求头的容量。</span></li><li><span>服务器端推送（需要手动实现）。</span></li></ol><h3><a name="http请求和响应" class="md-header-anchor"></a><span>http请求和响应</span></h3><p><strong><span>http请求</span></strong>
+<span>分为请求头，请求体，请求起始行三部分。</span></p><p><span>服务器在收到浏览器的http请求之后，会将收到http报文封装成http的Request对象，并通过服务器的处理，处理完的结果以http的Response对象返回，主要包括状态码、响应头、响应报文三部分。</span></p><p><strong><span>响应头</span></strong>
+<span>由Cache-Contol、Connection、Date、Pragma等组成。</span></p><p><strong><span>响应体</span></strong>
+<span>服务器返回给浏览器的信息，主要由HTML,css,js,图片文件组成。</span></p><p><strong><span>状态码</span></strong>
+<span>1xx：指示信息–表示请求已接收，继续处理。</span>
+<span>2xx: 成功–表示请求已被成功接收、理解、接受。</span>
+<span>3xx: 重定向–要完成请求必须进行更进一步的操作。</span>
+<span>4xx: 客户端错误–请求有语法错误或请求无法实现。</span>
+<span>5xx: 服务端错误–服务器未能实现合法的请求。</span></p><h3><a name="http有哪些请求方法它们的作用或者说应用场景" class="md-header-anchor"></a><span>http有哪些请求方法？它们的作用或者说应用场景？</span></h3><ul><li><code>GET</code><span>请求指定的页面信息，并返回实体主体。</span></li><li><code>HEAD</code><span>和GET类似，只不过不返回报文主体，只返回响应首部。可用于确认URI的有效性及资源更新的日期时间。</span></li><li><code>POST</code><span>向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。</span></li><li><code>PUT</code><span>用来传输文件，要求请求报文的主体中包含文件内容，然后保存到请求URI指定的位置。  </span></li><li><code>DELETE</code><span>和PUT相反，按请求URI删除指定的资源。</span></li><li><code>OPTIONS</code><span>用来查询针对请求URI指定的资源支持的方法。如果请求成功，会有一个Allow的头包含类似“GET,POST”这样的信息。</span></li><li><code>TRACE</code><span>让服务端将之前的请求通信返回给客户端的方法（因此客户端可以得知请求是怎么一步步到服务端的）。主要用于测试或诊断。</span></li><li><code>CONNECT</code><span>使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。</span></li></ul><h3><a name="http常用请求头" class="md-header-anchor"></a><span>http常用请求头</span></h3><ul><li><code>Accept</code><span>可接受的响应内容类型（Content-Types）。</span></li><li><code>Accept-Charset</code><span>可接受的字符集</span></li><li><code>Accept-Encoding</code><span>可接受的响应内容的编码方式。</span></li><li><code>Accept-Language</code><span>可接受的响应内容语言列表。</span></li><li><code>Accept-Datetime</code><span>可接受的按照时间来表示的响应内容版本</span></li><li><code>Authorization</code><span>用于表示HTTP协议中需要认证资源的认证信息</span></li><li><code>Cache-Control</code><span>用来指定当前的请求/回复中的，是否使用缓存机制。</span></li><li><code>Connection</code><span>客户端（浏览器）想要优先使用的连接类型</span></li><li><code>Cookie</code><span>由之前服务器通过Set-Cookie（见下文）设置的一个HTTP协议Cookie</span></li><li><code>Content-Length</code><span>以8进制表示的请求体的长度</span></li><li><code>Content-MD5</code><span>请求体的内容的二进制 MD5 散列值（数字签名），以 Base64 编码的结果</span></li><li><code>Content-Type</code><span>请求体的MIME类型 （用于POST和PUT请求中）</span></li><li><code>Date</code><span>发送该消息的日期和时间（以RFC 7231中定义的&quot;HTTP日期&quot;格式来发送）</span></li><li><code>Expect</code><span>表示客户端要求服务器做出特定的行为</span></li><li><code>From</code><span>发起此请求的用户的邮件地址</span></li><li><code>Host</code><span>表示服务器的域名以及服务器所监听的端口号。如果所请求的端口是对应的服务的标准端口（80），则端口号可以省略。</span></li><li><code>If-Match</code><span>仅当客户端提供的实体与服务器上对应的实体相匹配时，才进行对应的操作。主要用于像 PUT 这样的方法中，仅当从用户上次更新某个资源后，该资源未被修改的情况下，才更新该资源。</span></li><li><code>If-Modified-Since</code><span>允许在对应的资源未被修改的情况下返回304未修改</span></li><li><code>If-None-Match</code><span>允许在对应的内容未被修改的情况下返回304未修改（ 304 Not Modified ），参考 超文本传输协议 的实体标记</span></li><li><code>If-Range</code><span>如果该实体未被修改过，则向返回所缺少的那一个或多个部分。否则，返回整个新的实体</span></li><li><code>If-Unmodified-Since</code><span>仅当该实体自某个特定时间以来未被修改的情况下，才发送回应。</span></li><li><code>Max-Forwards</code><span>限制该消息可被代理及网关转发的次数。</span></li><li><code>Origin</code><span>发起一个针对跨域资源共享的请求（该请求要求服务器在响应中加入一个Access-Control-Allow-Origin的消息头，表示访问控制所允许的来源）。</span></li><li><code>Pragma</code><span>与具体的实现相关，这些字段可能在请求/回应链中的任何时候产生。</span></li><li><code>Proxy-Authorization</code><span>用于向代理进行认证的认证信息。</span></li><li><code>Range</code><span>表示请求某个实体的一部分，字节偏移以0开始。</span></li><li><code>Referer</code><span>表示浏览器所访问的前一个页面，可以认为是之前访问页面的链接将浏览器带到了当前页面。Referer其实是Referrer这个单词，但RFC制作标准时给拼错了，后来也就将错就错使用Referer了。</span></li><li><code>TE</code><span>浏览器预期接受的传输时的编码方式：可使用回应协议头Transfer-Encoding中的值（还可以使用&quot;trailers&quot;表示数据传输时的分块方式）用来表示浏览器希望在最后一个大小为0的块之后还接收到一些额外的字段。</span></li><li><code>User-Agent</code><span>浏览器的身份标识字符串</span></li><li><code>Upgrade</code><span>要求服务器升级到一个高版本协议。</span></li><li><code>Via</code><span>告诉服务器，这个请求是由哪些代理发出的。</span></li><li><code>Warning</code><span>一个一般性的警告，表示在实体内容体中可能存在错误。</span></li></ul><h3><a name="http状态码" class="md-header-anchor"></a><span>http状态码</span></h3><ul><li><code>100</code><span> Continue 该状态码说明服务器收到了请求的初始部分，并且请客户端继续发送</span></li><li><code>200</code><span> OK 请求成功。一般用于GET与POST请求</span></li><li><code>201</code><span> Created 已创建。成功请求并创建了新的资源</span></li><li><code>202</code><span> Accepted 已接受。已经接受请求，但未处理完成</span></li><li><code>203</code><span> Non-Authoritative Information 非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本</span></li><li><code>204</code><span> No Content 无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档</span></li><li><code>205</code><span> Reset Content 重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域</span></li><li><code>206</code><span> Partial Content 部分内容。服务器成功处理了部分GET请求</span></li><li><code>300</code><span> Multiple Choices 多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择</span></li><li><code>301</code><span> Moved Permanently 永久移动。请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。今后任何新的请求都应使用新的URI代替</span></li><li><code>302</code><span> Found 临时移动。与301类似。但资源只是临时被移动。客户端应继续使用原有URI</span></li><li><code>303</code><span> See Other 查看其它地址。与301类似。使用GET和POST请求查看</span></li><li><code>304</code><span> Not Modified 未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源</span></li><li><code>305</code><span> Use Proxy 使用代理。所请求的资源必须通过代理访问</span></li><li><code>306</code><span> Unused 已经被废弃的HTTP状态码</span></li><li><code>307</code><span> Temporary Redirect 临时重定向。与302类似。使用GET请求重定向</span></li><li><code>400</code><span> Bad Request 客户端请求的语法错误，服务器无法理解</span></li><li><code>401</code><span> Unauthorized 请求要求用户的身份认证</span></li><li><code>402</code><span> Payment Required 保留，将来使用</span></li><li><code>403</code><span> Forbidden 服务器理解请求客户端的请求，但是拒绝执行此请求</span></li><li><code>404</code><span> Not Found 服务器无法根据客户端的请求找到资源（网页）。通过此代码，网站设计人员可设置&quot;您所请求的资源无法找到&quot;的个性页面</span></li><li><code>500</code><span> Internal Server Error 服务器内部错误，无法完成请求</span></li><li><code>501</code><span> Not Implemented 服务器不支持请求的功能，无法完成请求</span></li><li><code>502</code><span> Bad Gateway 作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应</span></li><li><code>503</code><span> Service Unavailable 由于超载或系统维护，服务器暂时的无法处理客户端的请求。延时的长度可包含在服务器的Retry-After头信息中</span></li><li><code>504</code><span> Gateway Time-out 充当网关或代理的服务器，未及时从远端服务器获取请求</span></li><li><code>505</code><span> HTTP Version not supported 服务器不支持请求的HTTP协议的版本，无法完成处理</span></li></ul><h3><a name="get和post的对比或者说区别" class="md-header-anchor"></a><span>GET和POST的对比，或者说区别？</span></h3><ul><li><p><span>一般GET用于获取数据，POST用于提交数据。</span></p></li><li><p><span>GET把参数包含在URL中，POST通过封装参数到请求体中发送。</span></p></li><li><p><span>GET的参数长度有限制（不同的浏览器和服务器限制不同），POST没有限制。</span></p></li><li><p><span>GET只能进行url编码，而POST支持多种编码方式。</span></p></li><li><p><span>GET可以发送的参数只能是ASCII类型，POST没有限制，甚至可以传输二进制。</span></p></li><li><p><span>GET比POST不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。</span></p></li><li><p><span>还有GET请求会被保存浏览器历史记录，可以被收藏为书签，而POST请求不能等等。</span></p></li><li><p><span>GET刷新无害，而POST刷新会再次提交数据。</span></p></li><li><p><span>GET和POST本质都是TCP连接。不过GET产生一个TCP数据包；POST产生两个TCP数据包。</span></p><ul><li><span>对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200 OK（返回数据）。</span></li><li><span>对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 OK（返回数据）。</span></li></ul></li></ul><h2><a name="浏览器相关" class="md-header-anchor"></a><span>浏览器相关</span></h2><h3><a name="从打入url到显示页面浏览器做了什么" class="md-header-anchor"></a><span>从打入url到显示页面，浏览器做了什么？</span></h3><ol start='' ><li><span>浏览器的地址栏输入URL并按下回车。</span></li><li><span>浏览器查找当前URL是否存在</span><a href='#浏览器缓存机制'><span>缓存</span></a><span>，并比较缓存是否过期。</span></li><li><span>DNS解析URL到对应的ip。</span></li><li><span>根据ip</span><a href='#tcp连接三次握手'><span>建立TCP连接（三次握手）</span></a><span>。</span></li><li><span>发起</span><a href='#http请求和响应'><span>http请求</span></a><span>。</span></li><li><span>服务端处理请求，发回</span><a href='#http请求和响应'><span>响应信息</span></a><span>，浏览器接受http响应。</span></li><li><span>浏览器</span><a href='#浏览器渲染原理'><span>渲染页面</span></a><span>。</span></li><li><a href='#tcp四次握手释放连接'><span>关闭TCP连接（四次握手）</span></a><span>。</span></li></ol><h3><a name="浏览器缓存机制" class="md-header-anchor"></a><span>浏览器缓存机制</span></h3><p><span>根据是否需要重新向服务器请求来分类。  </span></p><ul><li><p><strong><span>强缓存：</span></strong><span> 判断http首部字段: </span><code>cache-control</code><span> </span><code>Expires</code><span>。</span></p><ol start='' ><li><span>cache-control中max-age保存一个相对时间。该时间标示，缓存在这个时间内均有效。</span></li><li><span>Expires 是一个绝对时间，即服务器时间。浏览器检查当前时间，如果没到失效时间就直接用缓存文件。（问题：服务器时间与浏览器时间不同）</span></li></ol></li><li><p><strong><span>弱缓存：</span></strong><span> </span><code>last-modified</code><span> </span><code>Etag</code></p><ol start='' ><li><span>last-modified 是第一次请求资源时，服务器返回字段，表示最后一次更新的时间。下一次请求发送if-modified-since字段，服务器回比较两者，如果不一致认为缓存已过期并返回新资源。相同，则返回304状态码，让浏览器继续缓存。</span></li><li><span>Etag 是资源的哈希字符串，如果资源内容更新，Etag回变化。不变则返回304状态码。</span></li></ol></li></ul><p><img src="./img/image.png" alt="image" border="0"></p><h3><a name="浏览器渲染原理" class="md-header-anchor"></a><span>浏览器渲染原理</span></h3><p><span>浏览器的内核是支持浏览器运行的最核心的程序，分为两个部分的，一是渲染引擎，另一个是JS引擎。渲染引擎在不同的浏览器中不是都相同的。比如Firefox中叫Gecko，Chrome 和 Safari都是基于WebKit开发的（Chrome渲染引擎现在切换为Blink）。</span></p><ol start='' ><li><span>处理 HTML 标记并构建 DOM 树。</span></li><li><span>处理 CSS 标记并构建 CSSOM 树。</span></li><li><span>将 DOM 与 CSSOM 合并成一个渲染树。</span></li><li><span>根据渲染树来布局，以计算每个节点的几何信息。</span></li><li><span>将各个节点绘制到屏幕上。</span></li></ol><p><strong><span>浏览器解析</span></strong></p><ol start='' ><li><span>浏览器通过请求的URL进行域名解析，向服务器发起请求，接收文件（HTML、CSS、JS、Images等）</span></li><li><span>HTML文件加载后，开始构建DOM Tree</span></li><li><span>CSS样式文件加载后，开始解析和构建CSS Rule Tree</span></li><li><span>javascript脚本文件加载后，通过DOM API和CSSOM API来操作DOM Tree 和 CSS Rule Tree。</span></li></ol><p><strong><span>浏览器渲染</span></strong><span> （</span><a href='#回流和重绘'><span>回流和重绘</span></a><span>）</span></p><ol start='' ><li><span>浏览器引擎通过DOM Tree 和 CSS Rule Tree 构建 Rendering Tree。</span></li><li><span>Rendering Tree 并不与 DOM Tree 对应，比如像 标签内容或带有 display: none; 的元素节点并不包括在 Rendering Tree 中。</span></li><li><span>通过CSS Rule Tree 匹配 DOM Tree 进行定位坐标和大小，是否换行，以及position、overflow、z-index等等属性，这个过程称为Flow或Layout。</span></li><li><span>最终通过调用Native GUI 的 API 绘制网页画面的过程称为 Paint 。</span></li></ol><p><img src="img/https-::i.ibb.co:27V9bhM:image.png" alt="image" border="0"></p><p><strong><span>具体如何做的？</span></strong></p><ol start='' ><li><span>转换： 浏览器从磁盘或网络读取HTML的原始字节，并根据文件指定编码将它们转换成各个字符。</span></li><li><span>令牌化：浏览器将字符串转换成html5规定的令牌，每个令牌都具有特殊含义和一组规则。</span></li><li><span>词法分析： 发出的令牌转换成定义其属性和规则的对象。</span></li><li><span>DOM构建： 最后，由于 HTML 标记定义不同标记之间的关系（一些标记包含在其他标记内），创建的对象链接在一个树数据结构内，此结构也会捕获原始标记中定义的父项-子项关系：HTML 对象是 body 对象的父项，body 是 paragraph 对象的父项，依此类推。</span></li></ol><p><img src="img/111.png" alt="111" border="0"></p><ol start='' ><li><span>DOM 树与 CSSOM 树合并后形成渲染树。</span></li><li><span>渲染树只包含渲染网页所需的节点。</span></li><li><span>布局计算每个对象的精确位置和大小。</span></li><li><span>最后一步是绘制，使用最终渲染树将像素渲染到屏幕上。</span></li></ol><p><img src="img/tree.png" alt="tree" border="0"></p><h3><a name="回流和重绘" class="md-header-anchor"></a><span>回流和重绘</span></h3><p><strong><span>Reflow：</span></strong><span> 回流。一般元素的内容、结构、位置或尺寸发生了变化，需要重新计算样式和渲染树。</span>
+<strong><span>Repaint：</span></strong><span> 重绘。意味着元素发生的变化只是影响了元素的一些外观之类的时候，此时只需要用新样式绘制这个元素就ok。</span></p><h3><a name="前端优化" class="md-header-anchor"></a><span>前端优化</span></h3><ul><li><span>降低请求量：合并资源，减少HTTP 请求数，minify / gzip 压缩，webP，lazyLoad。 </span></li><li><span>加快请求速度：预解析DNS，减少域名数，并行加载，CDN 分发。 </span></li><li><span>缓存：HTTP 协议缓存请求，离线缓存 manifest，离线数据缓存localStorage。 </span></li><li><span>渲染：JS/CSS优化，加载顺序，服务端渲染，pipeline。</span></li></ul><h2><a name="web安全问题" class="md-header-anchor"></a><span>Web安全问题</span></h2><h3><a name="xss-跨站脚本攻击" class="md-header-anchor"></a><span>XSS 跨站脚本攻击</span></h3><ul><li><span>攻击者通过注入恶意指令代码到网页，使用户加载并执行攻击者恶意制造的网页程序。这些恶意网页程序通常是JavaScript，但实际上也可以包括Java、VBScript、ActiveX、Flash 或者甚至是普通的HTML。</span></li><li><span>攻击成功后，攻击者可能得到包括但不限于更高的权限（如执行一些操作）、私密网页内容、会话和cookie等各种内容。</span></li></ul><p><strong><span>分类</span></strong><span>：</span></p><ul><li><strong><span>DOM XSS</span></strong><span>:  DOM即文本对象模型，DOM通常代表在html、xhtml和xml中的对象，使用DOM可以允许程序和脚本动态的访问和更新文档的内容、结构和样式。它不需要服务器解析响应的直接参与，触发XSS靠的是浏览器端的DOM解析，可以认为完全是客户端的事情。</span></li><li><strong><span>反射型 XSS</span></strong><span>: 反射型XSS也被称为非持久性XSS，由客户端发出携带在请求中，服务端接收后返回在响应中，在浏览器解析响应时被执行。</span></li><li><strong><span>存储型 XSS</span></strong><span>: 存储型XSS也成为持久性XSS，不需要手动触发，攻击者提交代码，被存到数据库，每次请求资源都被执行。</span></li></ul><p><strong><span>防御</span></strong><span>：</span></p><ul><li><span>服务端设置httpOnly：在cookie中设置HttpOnly属性后，js脚本将无法读取到cookie信息；设置secure - 告诉浏览器仅在请求为https的时候发送cookie。</span></li><li><span>过滤：在表单提交的时候，对所有的参数进行过滤。（antd的提交有问题）</span></li><li><span>HtmlEncode转换html标签。</span></li><li><span>JavaScriptEncode对字符加上反斜杠。</span></li></ul><h3><a name="csrf-跨站点请求伪造" class="md-header-anchor"></a><span>CSRF 跨站点请求伪造</span></h3><ul><li><span>跨站点请求伪造（Cross-Site Request Forgeries），也被称为one-click attack 或者 session riding。</span></li><li><span>冒充用户发起请求（在用户不知情的情况下）， 完成一些违背用户意愿的事情（如修改用户信息，删初评论等）。</span></li></ul><p><span>详解CSRF </span><a href='https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html'><span>https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html</span></a></p><p><img src="img/2009040916453171.jpg">
+<strong><span>防御</span></strong></p><ol start='' ><li><span>验证码；强制用户必须与应用进行交互，才能完成最终请求。此种方式能很好的遏制 csrf，但是用户体验比较差。</span></li><li><span>尽量使用 post ，限制 get 使用；上一个例子可见，get 太容易被拿来做 csrf 攻击，但是 post 也并不是万无一失，攻击者只需要构造一个form就可以。</span></li><li><span>Referer check；请求来源限制，此种方法成本最低，但是并不能保证 100% 有效，因为服务器并不是什么时候都能取到 Referer，而且低版本的浏览器存在伪造 Referer 的风险。</span></li><li><span>token；token 验证的 CSRF 防御机制是公认最合适的方案。</span></li></ol><h3><a name="click-jacking" class="md-header-anchor"></a><span>Click jacking</span></h3><p><span>点击劫持，是指利用透明的按钮或连接做成陷阱，覆盖在 Web 页面之上。然后诱使用户在不知情的情况下，点击那个连接访问内容的一种攻击手段。这种行为又称为界面伪装(UI Redressing) 。</span></p><ol start='' ><li><span>X-FRAME-OPTIONS  HTTP 响应头是用来给浏览器指示允许一个页面可否在</span><code>&lt;frame&gt;</code><span>, </span><code>&lt;iframe&gt;</code><span> 或者 </span><code>&lt;object&gt;</code><span> 中展现的标记。</span></li><li><span>js 判断顶层窗口跳转，可轻易破解，意义不大；</span></li></ol><p><span>如何配置</span></p><ol start='' ><li><span>Apache </span>
+<code>Header always append X-Frame-Options SAMEORIGIN</code></li><li><span>Nginx</span>
+<code>add_header X-Frame-Options SAMEORIGIN;添加到 &#39;http&#39;, &#39;server&#39; 或者 &#39;location&#39;，配置中</code></li><li><span>IIS</span></li></ol><h2><a name="计算机网络" class="md-header-anchor"></a><span>计算机网络</span></h2><h3><a name="计算机网络各层涉及的协议" class="md-header-anchor"></a><span>计算机网络各层涉及的协议</span></h3><p><strong><span>应用层：</span></strong></p><ul><li><strong><span>DNS</span></strong><span> (Domain Name System)域名系统&lt;端口号53&gt;，它用于TCP/IP网络，将主机名和域名转换为IP地址。</span></li><li><strong><span>FTP</span></strong><span>（File Transfer Protocol）文件传输协议&lt;端口号21&gt;减少或消除不同操作系统下处理文件的不兼容性。</span></li><li><strong><span>HTTP</span></strong><span>（Hypertext Transfer Protocol ）超文本传输协议 &lt;端口号80&gt;， 面向事务的应用层协议。</span></li><li><strong><span>SMTP</span></strong><span>（Simple Mail Transfer Protocol ）简单邮件传输协议 &lt;端口号25&gt; 用于发送邮件。</span></li><li><strong><span>RPC</span></strong><span> （Remote Procedure Call Protocol ）（RFC-1831）远程过程调用协议。</span></li></ul><p><strong><span>传输层：</span></strong></p><ul><li><strong><span>TCP</span></strong><span>  传输控制协议提供可靠的面向连接的服务，传输数据前须先建立连接，结束后释放。可靠的全双工信道。可靠、有序、无丢失、不重复。</span></li><li><strong><span>UDP</span></strong><span> 用户数据报协议发送数据前无需建立连接，不使用拥塞控制，不保证可靠交付，最大努力交付。</span></li></ul><p><strong><span>网络层：</span></strong></p><ul><li><strong><span>IP</span></strong><span> (IPv4 · IPv6) (Internet Protocol) 网络之间互连的协议</span></li><li><strong><span>ARP</span></strong><span> (Address Resolution Protocol) 即地址解析协议，实现通过IP 地址得 知其物理地址。</span></li><li><strong><span>RARP</span></strong><span> (Reverse Address Resolution Protocol)反向地址转换协议允许局域 网的物理机器从网关服务器的 ARP 表或者缓存上请求其 IP地址。</span></li><li><strong><span>ICMP</span></strong><span> (Internet Control Message Protocol) Internet 控制报文协议。它是TCP/IP 协议族的一个子协议，用于在IP 主机、路由器之间传递控制消息。</span></li></ul><p><strong><span>数据链路层：</span></strong></p><ul><li><strong><span>PPP</span></strong><span>(Point-to-Ponit Protocol)点对点协议面向字节，由三部分组成：一个将IP 数据报封装到串行链路的方法；一个用于建立、配置和测试数据链路连接的链路控制协议。</span></li><li><strong><span>CSMA/CD</span></strong><span>(Carrrier Sense Multiple Access with Collision Detection)载波监听多点接入/碰撞检测协议。总线型网络，协议的实质是载波监听和碰撞检测。载波监听即发数据前先检测总线上是否有其他计算机在发送数据，如暂时不发数据，避免碰撞。碰撞检测为计算机边发送数据边检测信道上的信号电压大小。</span></li><li><strong><span>ARQ</span></strong><span>（Automatic Repeat-reQuest ）自动重传请求协议，错误纠正协议之一，包括停止等待ARQ 协议和连续ARQ 协议，错误侦测、正面确认、逾时重传与负面确认继以重传等机制。</span></li></ul><h3><a name="tcp连接三次握手" class="md-header-anchor"></a><span>TCP连接三次握手</span></h3><ul><li><span>第一次握手：建立连接时，客户端发送syn包（syn = i）到服务器，并进入SYN_SENT状态，等待服务器确认；</span></li><li><span>第二次握手：服务器接收到syn包，必须确认客户的SYN(ack = i + 1)，同时自己也发送一个SYN包（syn = k）,即SYN+ACK包，此时服务器进入SYN_RECY状态。</span></li><li><span>第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包(ack = k + 1)，此包发送完毕，客户端和和服务端都进入ESTABLISHED（TCP连接成功）状态，完成三次握手。</span></li></ul><p><img src="img/tcp.png" alt="tcp" border="0"></p><h3><a name="tcp四次握手释放连接" class="md-header-anchor"></a><span>TCP四次握手释放连接</span></h3><ul><li><span>第一次握手：客户端到服务端，发送FIN，告诉服务端，我准备好结束了。</span></li><li><span>第二次握手：服务端发送ack，告知客户端，我已经收到你的结束信息了。</span></li><li><span>第三次握手：服务端发送FIN给客户端，告知客户端，我也准备好结束了。</span></li><li><span>第四次握手：客户端回复ack给服务端，告诉服务端，好的，结束吧。</span></li></ul><p><img src="img/image-20190814012813650.png" alt="image" border="0"></p><h3><a name="tcp和udp的区别" class="md-header-anchor"></a><span>TCP和UDP的区别</span></h3><ul><li><span>TCP是面向连接的，UDP是无连接的，即发送数据前不需要先建立链接。</span></li><li><span>TCP提供可靠的服务，通过TCP连接传送的数据，无差错，不丢失，不重复，且按序到达（适合大数据量的交换）。</span>
+<span>UDP尽最大努力交付，即不保证可靠交付。</span></li><li><span>TCP是面向字节流，UDP面向报文，并且网络出现拥塞不会使得发送速率降低（因此会出现丢包，对实时的应用比如IP电话和视频会议等）。</span></li><li><span>TCP只能是1对1的，UDP支持1对1,1对多。</span></li><li><span>TCP的首部较大为20字节，而UDP只有8字节。</span></li></ul></div>
+</body>
+</html>
