@@ -273,6 +273,21 @@ class ScrollingList extends React.Component {
 
 开发人员可以重写shouldComponentUpdate提高diff的性能。
 
+### Key详解
+
+react利用key来识别组件，它是一种身份标识标识。每个key对应一个组件，相同的key react认为是同一个组件，这样**后续相同的key对应组件都不会被创建**。
+
+有了key属性后，就可以与组件建立了一种对应关系，react根据key来决定是销毁重新创建组件还是更新组件。
+
+- key相同，若组件属性有所变化，则react只更新组件对应的属性；没有变化则不更新。
+- key值不同，则react先销毁该组件(有状态组件的`componentWillUnmount`会执行)，然后重新创建该组件（有状态组件的`constructor`和`componentWillUnmount`都会执行）
+
+由数组创建的子组件必须有key属性，**默认**上React帮我们做了，它是以数组的`index`作为key的。
+
+若数组的内容只是作为纯展示，而不涉及到数组的动态变更，其实是可以使用`index`作为key的。
+
+但是，若涉及到数组的动态变更，例如数组新增元素、删除元素或者重新排序等，这时index作为key会导致展示错误的数据。
+
 ### react事件机制
 
 #### 特点
