@@ -39,7 +39,15 @@ React使用虚拟DOM机制，对于每一个组件，React会在内存中构建�
 
 ### setstate原理
 
-React对于this.setState，并不是一触发this.setState就将state的值变化，而是采用批量更新（**batch update**机制）。在setState后，将需要更新的state合并之后放入状态队列。在一定时候，才会对state进行更新，这样可以减少组件的渲染次数，提高性能。
+在React的生命周期和合成事件执行前后都有相应的钩子，分别是pre钩子和post钩子，pre钩子会调用batchedUpdate(批量更新)方法将isBatchingUpdates变量置为true，开启批量更新，而post钩子会将isBatchingUpdates置为false
+
+![img](img/636026-20180909011344536-1021626724.png)
+
+isBatchingUpdates变量置为true，则会走批量更新分支，setState的更新会被存入队列中，待同步代码执行完后，再执行队列中的state更新。
+
+而在原生事件和异步操作中，不会执行pre钩子，或者生命周期的中的异步操作之前执行了pre钩子，但是pos钩子也在异步操作之前执行完了，isBatchingUpdates必定为false，也就不会进行批量更新。
+
+这样可以减少组件的渲染次数，提高性能。
 
 > React的batch update是采用Transaction（事物）来实现的。Transaction对函数进行包装，让React有机会在函数执行前和执行后运行特定的逻辑。
 
@@ -49,11 +57,9 @@ Transaction的执行机制：
 2. 调用setState时，状态不会自理调用，而是被push进update queue。
 3. 函数执行结束调用事件close阶段，update queue会被flush。
 
-想比于React，Vue是采用Event Loop。
+相比于React，**Vue**是采用Event Loop。
 
-> React基于Transaition实现的Batch Query是一个不以来语言特性的通用模式，因此有更稳定可控的表现。但缺点是无法覆盖所有情况。
-
-比如setTimeout的回调函数不受React控制。 由于setTimeout等要离开主线程进行异步操作时会脱离当前的UI事物，在进入此次处理时batchUpdate=false。所以setState几次就render几次。
+> React基于Transaition实现的Batch Query是一个不以来语言特性的通用模式，因此有**更稳定可控**的表现。但缺点是无法覆盖所有情况。比如setTimeout的回调函数不受React控制。 由于setTimeout等要离开主线程进行异步操作时会脱离当前的UI事物，在进入此次处理时batchUpdate=false。所以setState几次就render几次。
 
 ```javascript
 // setState的另外一种方式
@@ -62,6 +68,78 @@ this.setState((prevState,props) => {
 	return { index : prevState.index + 1 + props.index };
 })
 ```
+
+#### setState的基本过程
+
+setState的调用会引起React的更新生命周期的4个函数执行。
+
+shouldComponentUpdate
+componentWillUpdate
+render
+componentDidUpdate
+
+当shouldComponentUpdate执行时，返回true，进行下一步，this.state没有被更新
+返回false，停止，更新this.state
+
+当componentWillUpdate被调用时，this.state也没有被更新
+
+直到render被调用时候，this.state才被更新。
+
+总之，直到下一次render函数调用(或者下一次shouldComponentUpdate返回false时)才能得到更新后的this.state
+因此获取更新后的状态可以有3种方法：
+
+**1. setState函数式**
+
+**2. setState在setTimeout，Promise等异步中执行**
+
+```javascript
+setStatePromise(updator) {
+    return new Promise(((resolve, reject) => {
+        this.setState(updator, resolve);
+    }));
+}
+
+componentWillMount() {
+    this.setStatePromise(({ num }) => ({
+        num: num + 1,
+    })).then(() => {
+        console.log(this.state.num);
+    });
+}
+
+// 方法二
+function setStateAsync(nextState){  
+  return new Promise(resolve => {
+    this.setState(nextState, resolve);
+  });
+}
+
+async func() {  
+  ...
+  await this.setStateAsync({count: this.state.count + 1});
+  await this.setStateAsync({count: this.state.count + 1});
+}
+```
+
+**3. setState callback**
+
+```javascript
+setState({
+    index: 1
+}}, ()=>{
+    console.log(this.state.index);
+})
+```
+
+**4. componentDidUpdate**
+
+```javascript
+componentDidUpdate(){
+    console.log(this.state.index);
+}
+```
+
+
 
 ### 组件生命周期
 
