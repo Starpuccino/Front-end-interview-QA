@@ -614,7 +614,7 @@ window 对象有个 name 属性，该属性有个特征：即在一个窗口（w
 
 比如主域名是[http://crossdomain.com](http://crossdomain.com/):9099，子域名是[http://child.crossdomain.com](http://child.crossdomain.com/):9099，这种情况下给两个页面指定一下document.domain即document.domain = crossdomain.com就可以访问各自的window对象了。
 
-## **异步**
+## **异步加载**
 
 ### JS异步加载的三种方式
 
@@ -946,6 +946,12 @@ for (let i = 1; i <= 5; i++) {
 
 ### Promise.all实现
 
+- 接收一个 Promise 数组，返回一个 Promise,用p缓存
+
+在传给 Promise.all 的所有 Promise 都兑现后,p也会随之兑现并按照传入顺序返回各 Promise 兑现的结果数组，但只要有一个 Promise 被拒绝,那么 p 就会立即以该 Promise 的拒绝理由确定为被拒绝。
+
+同时异步请求多个数据的时候，即并行，就会使用用all
+
 ```javascript
 static all(proArr) {
   return new Promise((resolve, reject) => {
@@ -957,6 +963,21 @@ static all(proArr) {
     }
     for (let i = 0; i < proArr.length; i++) {
       proArr[i].then(data => done(i,data) , reject)
+    }
+  })
+}
+```
+
+### Promise.race实现
+
+得益于promise的状态只能改变一次，即resolve和reject都只被能执行一次，我们把返回的promie里的resolve和reject方法放在了promiseAry每一个promise的成功或者失败回调里面，当其中任意一个成功或失败后就会调用我们传进去的resolve和reject，一旦调用了，就不会再次调用。
+
+
+```javascript
+static race(promiseAry) {
+  return new Promise((resolve, reject) => {
+    for (let i = 0; i < promiseAry.length; i++) {
+      promiseAry[i].then(resolve, reject)
     }
   })
 }
