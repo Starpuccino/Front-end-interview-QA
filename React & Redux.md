@@ -170,3 +170,283 @@ class ScrollingList extends React.Component {
 
 ![img](img/1000-20190820202806846.png)
 
+### props与state
+
+**props 属性**
+
+1. 单向数据流：从父级传向子级。
+2. 只读性：子级中无法改变其值。
+
+**state 属性**
+
+1. 组件保存、控制以及修改自己的状态。数据状态。
+2. 组件的私有属性。
+3. 只能通过setState来修改。
+
+**有状态组件和无状态组件**的区别：有无state。
+
+### diff算法原理
+
+1. 把树形结构按照层级分解，只比较同级元素。
+2. 把列表结构的每个单元添加唯一的key属性，方便比较。
+3. React只会匹配相同组件名的component。
+4. 合并操作。（批量更新）调用component的setState的时候，React将其设为dirty,事件循环结束后，对dirty组件进行重新绘制。
+5. 选择性子树渲染。
+
+开发人员可以重写shouldComponentUpdate提高diff的性能。
+
+### react事件机制
+
+#### 特点
+
+- 使用事件委托机制，以队列的方式，从触发事件的组件向父组件回溯直到document节点，因此React组件上声明的事件最终绑定到了document上。由此减少了DOM操作，优化了性能。
+- 基于虚拟DOM实现SyntheticEvent合成事件。
+
+#### 事件注册
+
+ReactEventListener负责事件注册。
+
+1. ReactDOM.render()会调用_renderSubtreeInfoContainer方法将Element添加到container。
+2. _renderSubtreeInfoContainer首先会创建新Element的虚拟DOM，在该虚拟DOM上做操作。
+3. 将虚拟DOM转换成组件，通过_updateDOMProperties方法更新虚拟DOM属性。包括onclick。
+4. 通过enqueuePutListener方法负责注册和存储事件。
+5. 使用listenTo负责注册事件。（主要解决了不同浏览器间的捕获和冒泡不兼容问题）
+6. 采用事物队列的方式调用putListener将注册的事件存储起来，以供事件触发时回调。
+
+事件回调方法是在什么阶段触发？
+
+事件回调方法在bubble阶段被触发。如果我们想让它在capture阶段触发，则需要在事件名上加capture。调用trapCapturedEvent和trapBubbledEvent来注册捕获和冒泡事件。
+
+#### 事件存储
+
+由EventPluginHub来负责，入口为putListener，实际调用的是EventPluginHub.js中的putListener方法，EventPluginHub.js主要负责事件的存储、合成事件以对象池的方式实现创建和销毁。
+
+```javascript
+putListener: function (inst, registrationName, listener) {
+// key用来标识被注册事件react对象的NoodID。
+var key = getDictionaryKey(inst);
+//如果listenerBank存在registrationName事件元素取出该值，否则初始化。比如该实例中listenerBank[‘OnClick’]
+var bankForRegistrationName = listenerBank[registrationName] || (listenerBank[registrationName] = {});
+//将该组件的注册的OnClick事件存入,即listenerBank[‘OnClick’][key] = listener；    bankForRegistrationName[key] = listener;
+// EventPluginRegistry事件注册 插件，用于合成和分发事件，EventPluginRegistry.registrationNameModules[registrationName]用来提取’OnClick’的事件回调插件模型。
+var PluginModule = 
+EventPluginRegistry.registrationNameModules[registrationName];
+    if (PluginModule && PluginModule.didPutListener) {
+      PluginModule.didPutListener(inst, registrationName, listener);
+    }
+}
+```
+
+#### 事件分发
+
+当事件触发时，注册在document上的回调函数会被触发。
+
+1. 事件触发的入口函数是ReactEventListener.dispatchEvent，负责分发已注册的回调函数。
+2. 在这个函数中会调用batchingStrategy 的 batchUpdate 方法实现批处理更新。
+3. batchUpdate以transaction形式调用，批量处理更新。
+
+```javascript
+function handleTopLevelImpl(bookKeeping) {
+// 获取原生的事件target
+  var nativeEventTarget = getEventTarget(bookKeeping.nativeEvent);
+// 获取原生事件的target所在的组件，它是虚拟DOM
+  var targetInst = ReactDOMComponentTree.getClosestInstanceFromNode(nativeEventTarget);
+  var ancestor = targetInst;
+// 向上遍历所有的祖先节点并存到bookKeeping.ancestors 中。
+// 因为事件回调中可能会改变Virtual DOM结构,所以要先遍历好组件层级 
+ do {
+    bookKeeping.ancestors.push(ancestor);
+    ancestor = ancestor && findParent(ancestor);
+  } while (ancestor);
+// 从当前组件向上遍历，依次执行注册的回调方法。这是一个冒泡的过程。
+  for (var i = 0; i < bookKeeping.ancestors.length; i++) {
+    targetInst = bookKeeping.ancestors[i];
+    ReactEventListener._handleTopLevel(bookKeeping.topLevelType, targetInst, bookKeeping.nativeEvent, getEventTarget(bookKeeping.nativeEvent));
+  }
+}
+```
+
+#### 事件回调
+
+各个节点分别调用ReactEventListener._handleTopLevel（）方法来触发被注册的回调函数。
+
+#### 事件合成
+
+React不是将click事件绑定在该div的真实DOM上，而是在document处监听所有支持的事件，当事件发生并冒泡到document处时，React将事件内容封装并交由真正的处理函数运行。
+
+由于原生事件需要绑定在真实DOM上，所以一般是在componentDidMount阶段/ref的函数执行阶段进行绑定操作，在componentWillUnmount阶段进行解绑操作以避免内存泄漏。
+
+![](img/react_event.jpg)
+
+#### 总结
+
+- 一是事件绑定，ReactBrowserEventEmitter的trapBubbledEvent等方法为节点或文档绑定事件；
+- 二是事件监听，ReactEventListener.dispatchEvent将把该回调函数分发给事件对象的_dispatchListener属性；调用ReactBrowserEventEmitter.ReactEventListener方法以监听节点事件。
+- 三是事件分发与触发，对触发的事件进行分发，并创建合成事件对象，在回调中用构建合成事件对象并执行合成事件对的象绑定回调。
+
+### component和purecomponent的区别
+
+PureComponent 会对当前组件的state和props 做一个浅比较，比较发生在componentShouldUpdate，以判断是否要重新渲染组件。
+
+PureComponent 一般只用在纯展示组件上。
+
+### 受控组件和不受控组件
+
+不受控组件是指html原生的，比如<input>,<textarea> 其值由组件内部维护，并基于用户输入来更新。当提交的时候元素的值会随表单一起发送。而react编写组件的时候，可以通过state获取表单组件的值，并且通过onchange方法更新state，重新渲染组件。一个表单组件，当他的值通过这种方式来控制，就是受控组件。
+
+### 容器组件和展示组件
+
+传入什么就展示什么，通过props来控制组件的展示状态，而不受redux的影响，就是展示组件。
+
+容器组件往往连接到redux，是用来描述如何运行的，监听着redux state，一旦redux state变化，页面就发生变化的组件。 称为容器组件。
+
+### 高阶组件
+
+高阶函数是一个函数，它接收函数作为参数或将函数作为输出返回。
+
+高阶组件是一个入参为组件，并且返回一个新组件的纯函数。
+
+例如redux的`connect`函数与 antd的`const ExportDetail = Form.create()(Update);`
+
+### react性能优化
+
+react性能查看方法： React Perf 在url后直接加 ?react_pref 就可以在控制台查看
+
+1. 定制shouldComponentUpdate
+2. 给每个同级的重复性东西，例如item设置key
+3. render中尽量减少新建变量和bind函数。
+4. 能用const声明的就用const。
+5. 减少对真实DOM的操作
+
+## Redux
+
+Redux是javascript状态容器，提供可预测化的状态管理。
+
+**redux的思想：** 控制state，让state的变化变得可以预测，核心思想是，通过申明action，来确定state由于什么而发生变化，state有哪些变化的方式。reducer将state和action联系起来，最后返回新的state的函数。每个state可能都要对应一个reducer。
+
+### **三大原则**
+
+1. 单一数据源。整个应用的state存储在一棵object tree中，这个对象树只存在于唯一一个store中。
+2. state是只读的。唯一修改state的方法是触发action，action是描述发生了什么事件的对象。
+3. 使用纯函数来执行修改。为了描述action如何改变object tree，需要编写reducer。
+
+**action:** 需要定义type 来指定要执行的动作。
+
+**action创建函数:** 返回action，使的action更容易移植和测试。
+
+**reducer:** 指定了应用状态的变化如何响应actions并发送到store的，action只是描述了事情发生这一事实。
+
+**Store：** 把action和reducer联系在一起的对象。
+
+- 维持应用的 state；
+- 提供 getState() 方法获取 state；
+- 提供 dispatch(action) 方法更新 state；
+- 通过 subscribe(listener) 注册监听器;
+- 通过 subscribe(listener) 返回的函数注销监听器。
+
+`let store = createStore(todoApp, window.STATE_FROM_SERVER)` 第二个参数是用来 初始化state
+
+### connect方法
+
+作用：将redux的中的state与dispatch通过props传递给组件，使得组件可以与redux的state绑定，即让组件成为一个容器组件。
+
+好处：用contect的好处是这个方法做了很多的性能优化来避免不必要的重复渲染。这样就不必为了性能优化而手动实现componentShouldUpdate方法了。
+
+### Provider组件
+
+Provider组件是react-redux提供的一个组件，用来将store传递给子组件。因为通过connect的时候，需要获取state，这时候如果将store引入，会十分麻烦。因此可以在最外层写Provider组件，并且将store作为属性传入即可。
+
+原理：Provider获取到store后，并声明为context的属性之一。子组件声明了contextTypes之后，可以通过this.context.store访问到store。
+
+### 谈谈react context的理解
+
+他就像是组件的作用域。用于父子组件，多层级组件的传值。如果不想逐层传递props或者state的方式来传递数据时，可以用Context Api。可以**跨域组件**进行数据传递。
+
+```javascript
+// father component
+// 父组件需要静态方法childContextTypes声明提供给子组件的Context对象的属性
+static childContextTypes = {
+  propsA: PropTypes.string,
+  methodA: PropTypes.func
+}
+getChildContext() {
+  return { propsA: 'props'}
+}
+
+// child components 
+// 子组件需要声明contextTypes,才能访问父组件的值，不然访问不到
+static contextTypes = {
+  propA: PropTypes.string
+}
+
+render() {
+  const propsA = this.context.prosA
+}
+```
+
+### redux中间件
+
+- redux-thunk — 用最简单的方式搭建异步 action 构造器
+- redux-promise — 遵从 FSA 标准的 promise 中间件
+- redux-axios-middleware — 使用 axios HTTP 客户端获取数据的 Redux 中间件
+- redux-observable — Redux 的 RxJS 中间件
+- redux-rx — 给 Redux 用的 RxJS 工具，包括观察变量的中间件
+- redux-logger — 记录所有 Redux action 和下一次 state 的日志
+- redux-immutable-state-invariant — 开发中的状态变更提醒
+- redux-unhandled-action — 开发过程中，若 Action 未使 State 发生变化则发出警告
+- redux-analytics — Redux middleware 分析
+- redux-gen — Redux middleware 生成器
+- redux-saga — Redux 应用的另一种副作用 model
+- redux-action-tree — Redux 的可组合性 Cerebral-style 信号
+- apollo-client — 针对 GraphQL 服务器及基于 Redux 的 UI 框架的缓存客户端
+
+**redux-thunk的作用**
+
+搭建异步action构造器。解决的思想为将action creator修改，由一开始的传回对象，到可以传回一个function。这样的话，store.dispatch就可以接受一个方法了。在action creator中可以添加异步方法，并触发store的dispathc方法为变量赋值。
+
+精炼概括：redux-thunk中间件，修改dispatch，使得dispatch可以接受一个函数（而不是只能接受action），并将store.dispatch传入这个函数。
+
+**redux-sage的作用**
+
+redux-sage是一个用于管理应用程序副作用的资源。redux-sage是redux的中间件，这个线程可以从主应用程序停止，开始和取消。
+
+精炼概括：redux-sage中间件，在action触发reducer之外，在触发副作用的操作。Sage是一个可以用来处理复杂的异步逻辑的模块，并且由redux的action触发。
+
+call 可以接受promise对象，将异步变同步 put 就是redux的dispatch操作。
+
+## react-router
+
+react-router是保证一个url对应一个components，也就是页面。确保一个页面是一个路由。
+
+1. 嵌套路由。
+2. 路径语法。
+3. 优先级。
+
+History对象
+
+browserHistory: 浏览器真实url hashHistory: 使用url中的hash（#）部分创建路由 createMemoryHistory: Memory history不会在地址栏被操作或读取。
+
+**实现原生的路由**
+
+1. **切换页面：** 路由的最大作用就是切换页面，以往后台的路由是直接改变了页面的url方式促使页面刷新。但是前端路由通过 # 号不能刷新页面，只能通过 window 的监听事件 hashchange 来监听hash的变化，然后捕获到具体的hash值进行操作。
+2. **注册路由：** 我们需要把路由规则注册到页面，这样页面在切换的时候才会有不同的效果。
+3. **异步加载js** ：一般单页面应用为了性能优化，都会把各个页面的文件拆分开，按需加载，所以路由里面要加入异步加载js文件的功能。异步加载我们就采用最简单的原生方法，创建script标签，动态引入js。
+4. **参数传递：** 在我们动态引入单独模块的js之后，我们可能需要给这个模块传递一些单独的参数。这里借鉴了一下jsonp的处理方式，我们把单独模块的js包装成一个函数，提供一个全局的回调方法，加载完成时候再调用回调函数。
+
+## Dva
+
+基于redux + redux-saga 的数据流方案。内置react-router,fetch等。是一个轻量级的应用框架。
+
+Modal 将数据模块分离出来。 
+
+namespaces // 命名空间
+
+state // 当前modal的state变量
+
+effect // 异步操作 副作用
+
+reducers // 描述如何修改state
+
+subscription //订阅一个数据源
+
+history //路由变化
